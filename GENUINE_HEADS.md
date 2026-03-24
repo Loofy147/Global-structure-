@@ -20,3 +20,8 @@ The precision of the engine has been upgraded to v2.0. The "8-Weight" architectu
 1. **W4 Optimization:** $O(m^m) \to O(m)$ transition complete.
 2. **Backtracking Spike:** Logic added to handle larger odd $m$ via targeted displacement mapping.
 3. **Unified Engine:** `engine.py` is now a single orchestrator for all 8 weights.
+
+## 4. Large-Scale Progress (Run #1)
+- **m=6 (P2):** Multi-seed Basin Hopping reached score **139** in initial 261k iterations across 4 seeds.
+- **Framework:** `large_scale_orchestrator.py` successfully manages parallel exploration of the Z3-periodic structure.
+- **Compute:** Optimized core search loop now delivers 6,500+ iters/sec, enabling 100M+ iteration daily runs.

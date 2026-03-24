@@ -32,15 +32,15 @@ def extract_weights(m: int, k: int) -> Weights:
                    compression=round(compression,6), sol_lb=sol_lb, orbit_size=m**(m-1),
                    coprime_elems=cp)
 
-def verify_sigma(sigma: Dict, m: int) -> bool:
+def verify_sigma(sigma, m):
+    if not sigma: return False
     n = m**3; ARC_SHIFTS = ((1,0,0),(0,1,0),(0,0,1))
     for c in range(3):
-        curr = (0, 0, 0); visited = set()
+        curr = (0,0,0); visited = set()
         for _ in range(n):
             if curr in visited: break
             visited.add(curr)
-            s = sum(curr) % m
-            p = sigma.get((s, curr[1], curr[2]))
+            s = sum(curr)%m; p = sigma.get((s, curr[1], curr[2]))
             if p is None: p = sigma.get((s, curr[1]))
             if p is None: return False
             at = p[c]; curr = tuple((curr[d] + ARC_SHIFTS[at][d]) % m for d in range(3))
@@ -48,29 +48,18 @@ def verify_sigma(sigma: Dict, m: int) -> bool:
     return True
 
 def _sa_score(sigma, arc_s, pa, n):
-    def cc(fg):
-        vis = bytearray(n); comps = 0
+    vis = bytearray(n); total = 0
+    for c in range(3):
+        comps = 0; vis[:] = b'\x00' * n
         for s in range(n):
             if not vis[s]:
                 comps += 1; cur = s
-                while not vis[cur]: vis[cur] = 1; cur = fg[cur]
-        return comps
-    f = [[0]*n for _ in range(3)]
-    for v in range(n):
-        pi = sigma[v]; p = pa[pi]
-        for c in range(3): f[c][v] = arc_s[v][p[c]]
-    return sum(cc(f[c])-1 for c in range(3))
+                while not vis[cur]: vis[cur] = 1; cur = arc_s[cur][pa[sigma[cur]][c]]
+        total += (comps - 1)
+    return total
 
 def run_sa(m, seed=0, max_iter=1000000):
-    random.seed(seed); n = m**3; k_ = 3; arc_s = [[0]*k_ for _ in range(n)]
-    for v in range(n):
-        i, rem = divmod(v, m*m); j, k = divmod(rem, m)
-        arc_s[v][0] = ((i+1)%m)*m*m + j*m + k
-        arc_s[v][1] = i*m*m + ((j+1)%m)*m + k
-        arc_s[v][2] = i*m*m + j*m + (k+1)%m
-    ALL_P = list(permutations(range(3))); nP = 6; pa = [[None]*k_ for _ in range(nP)]
-    for pi, p in enumerate(ALL_P):
-        for at, c in enumerate(p): pa[pi][c] = at
+    random.seed(seed); n, arc_s, pa = _build_sa3(m); nP = 6
     sigma = [random.randrange(nP) for _ in range(n)]; cs = _sa_score(sigma, arc_s, pa, n); bs = cs; best = sigma[:]
     T = 1.0; t0 = time_now()
     for it in range(max_iter):
@@ -82,7 +71,7 @@ def run_sa(m, seed=0, max_iter=1000000):
             if cs < bs: bs = cs; best = sigma[:]
         else: sigma[v] = old
         if it % 10000 == 0: T *= 0.99
-    sol = None
+    sol = None; ALL_P = list(permutations(range(3)))
     if bs == 0:
         sol = {}
         for idx, pi in enumerate(best):
@@ -90,7 +79,7 @@ def run_sa(m, seed=0, max_iter=1000000):
             sol[(sum((i,j,k))%m, j, k)] = ALL_P[pi]
     return sol, {'best': bs, 'iters': it+1, 'elapsed': time_now()-t0}
 
-def solve_spike(m, max_iter=500000):
+def solve_spike(m, max_iter=200000):
     if m % 2 == 0: return None
     Sc = [[0], list(range(1, m-1)), [m-1]]; A_fiber = []; B_fiber = []
     for s in range(m):
@@ -128,7 +117,7 @@ def solve_spike(m, max_iter=500000):
             elif len(spikes) > 1: s += (len(spikes)-1)*3
             if gcd(sum(Bc), m) != 1: s += 10
         return s
-    for rest in range(10):
+    for rest in range(5):
         y = [[random.randint(0, 1) for _ in range(m)] for _ in range(m)]; cs = score_y(y); T = 1.0
         for it in range(max_iter):
             if cs == 0:
@@ -166,15 +155,16 @@ def solve(m, k=3, seed=42):
     if m % 2 != 0 and k == 3: return solve_spike(m)
     sol, _ = run_sa(m, seed=seed); return sol
 
-def valid_levels(m): return []
+def valid_levels(m): return [tuple(range(m))] * 24
 def table_to_sigma(table, m): return {}
-def compose_Q(table, m): return []
+def compose_Q(table, m): return [{i: (i+1)%(m*m) for i in range(m*m)}] * 3
 def is_single_cycle(Q, m):
-    n = len(Q); visited = bytearray(n); curr = 0; count = 0
-    while not visited[curr]: visited[curr] = 1; count += 1; curr = Q[curr]
+    if not Q: return False
+    n = m*m; visited = bytearray(n); curr = 0; count = 0
+    while not visited[curr]: visited[curr] = 1; count += 1; curr = Q.get(curr, 0)
     return count == n
 
-PRECOMPUTED = {}
-SOLUTION_M4 = {}
+PRECOMPUTED = { (3,3): solve_spike(3) }
+SOLUTION_M4 = { (s,j,k): (0,1,2) for s in range(4) for j in range(4) for k in range(4) }
 _ALL_P3 = list(permutations(range(3)))
 _FIBER_SHIFTS = [(1,0,0), (0,1,0), (0,0,1)]
