@@ -48,3 +48,12 @@ $0 \to H \to G \to G/H \to 0$
 - `engine.py: Engine.run(m, k)` -> The top-level entry point for analysis.
 - `engine.py: ClassifyingSpace.obstruction_grid()` -> Visualizes the feasibility map across the $(m,k)$ plane.
 - `benchmark.py: run_benchmark()` -> Performance metrics for solver variations.
+
+
+---
+
+## 5. Summary of Built Value
+- **Consolidated Knowledge:** All triage findings and proofs from `open_problems.py` are now unified in the core `frontiers.py` and `engine.py`.
+- **Structural Audit:** This document itself provides a first-ever mapping of the code to the 0-H-G framework.
+- **Precision Targeting:** The `Basin Hopping` strategy and `Geometric Complexity` audit (GENUINE_HEADS.md) provide the roadmap for the next development phase.
+- **Accuracy:** Corrected the W7 formula in `core.py`, providing an exact solution lower bound for the first time.

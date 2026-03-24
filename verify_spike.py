@@ -1,15 +1,8 @@
-"""
-Geometric Construction for Claude's Cycles (Odd m).
-Verifies the 'spike function' hypothesis: for odd m, a valid
-3-Hamiltonian decomposition exists where the displacement
-function b_c(j) is a spike (v everywhere, v+delta at one point).
-"""
-
 import time
 import random
+from math import gcd
 
 def get_sigma(y, m, Sc):
-    """Construct sigma(s, j) from binary choices y[s][j]."""
     A = []; B = []
     for s in range(m):
         c1 = -1
@@ -17,7 +10,6 @@ def get_sigma(y, m, Sc):
             if s in Sc[c]: c1 = c; break
         others = [c for c in range(3) if c != c1]
         A.append(others[0]); B.append(others[1])
-
     sigma = {}
     for s in range(m):
         c1 = -1
@@ -27,32 +19,26 @@ def get_sigma(y, m, Sc):
             y_val = y[s][j]
             c0 = A[s] if y_val == 1 else B[s]
             c2 = [c for c in range(3) if c not in [c0, c1]][0]
-            # Arc 0 -> c0, Arc 1 -> c1, Arc 2 -> c2
-            p = [0,0,0]
-            p[0]=c0; p[1]=c1; p[2]=c2
-            # Inverse: sigma[cycle] = arc_type
+            p = [0,0,0]; p[0]=c0; p[1]=c1; p[2]=c2
             inv = [0,0,0]
             for at, color in enumerate(p): inv[color] = at
             sigma[(s, j)] = tuple(inv)
     return sigma
 
 def get_stats(y, m, Sc):
-    """Calculate the b_c(j) displacement for each cycle c and column j."""
     def get_path(c, j0):
         path = [0]*m; curr_j = j0
         for s in range(m):
             path[s] = curr_j
             if s in Sc[c]: curr_j = (curr_j + 1) % m
         return path
-
-    A = []; B = []
+    A = []; B_choices = []
     for s in range(m):
         c1 = -1
         for c in range(3):
             if s in Sc[c]: c1 = c; break
         others = [c for c in range(3) if c != c1]
-        A.append(others[0]); B.append(others[1])
-
+        A.append(others[0]); B_choices.append(others[1])
     B_stats = []
     for c in range(3):
         Bc = []
@@ -63,14 +49,13 @@ def get_stats(y, m, Sc):
                 js = path[s]
                 if A[s] == c:
                     if y[s][js] == 1: count += 1
-                else: # B[s] == c
+                else: # B_choices[s] == c
                     if y[s][js] == 0: count += 1
             Bc.append(count)
         B_stats.append(Bc)
     return B_stats
 
 def verify_hamiltonian(sigma_fiber, m):
-    """Rigorous verification of the Hamiltonian property."""
     n = m**3
     ARC_SHIFTS = ((1,0,0),(0,1,0),(0,0,1))
     for c in range(3):
@@ -84,34 +69,52 @@ def verify_hamiltonian(sigma_fiber, m):
         if len(visited) != n: return False
     return True
 
-def is_spike(vals):
-    v = min(vals); spikes = [x for x in vals if x != v]
-    return not spikes or len(spikes) == 1
+def score_y(y, m, Sc):
+    B = get_stats(y, m, Sc)
+    s = 0
+    for Bc in B:
+        vmin = min(Bc)
+        # We want EXACTLY one spike or zero (flat)
+        spikes = [x for x in Bc if x != vmin]
+        if len(spikes) > 1: s += (len(spikes) - 1) * 3
+        # Coprimality is strictly required
+        if gcd(sum(Bc), m) != 1: s += 10
+    return s
 
-def run_m(m):
+def run_m(m, max_iter=1000000):
     print(f"\n[m={m}] Searching for spike-function construction...")
-    start = time.time()
-    # Configuration: Cycle 1 uses Arc 1 in most fibers
-    r = (1, m-2, 1)
     Sc = [[0], list(range(1, m-1)), [m-1]]
+    r = (1, m-2, 1)
 
-    # We use a randomized approach to find the 'y' configuration
-    # that yields the spike b-function.
-    for i in range(1000000):
+    t0 = time.time()
+    for rest in range(10):
         y = [[random.randint(0, 1) for _ in range(m)] for _ in range(m)]
-        B = get_stats(y, m, Sc)
-        if all(is_spike(Bc) for Bc in B):
-            if all(sum(Bc) % m != 0 for Bc in B):
+        curr_s = score_y(y, m, Sc); T = 1.0
+        for it in range(max_iter):
+            if curr_s == 0:
+                B = get_stats(y, m, Sc)
                 sigma = get_sigma(y, m, Sc)
                 if verify_hamiltonian(sigma, m):
-                    elapsed = time.time() - start
-                    print(f"  SUCCESS! Found spike solution in {elapsed:.2f}s")
+                    print(f"  SUCCESS! rest={rest} it={it} time={time.time()-t0:.2f}s")
                     for c in range(3):
                         print(f"  Cycle {c}: r={r[c]}, b(j)={B[c]} (sum={sum(B[c])})")
                     return True
-    print(f"  Failed to find spike solution for m={m}")
+                else: curr_s = 20
+
+            s_idx, j_idx = random.randrange(m), random.randrange(m)
+            y[s_idx][j_idx] = 1 - y[s_idx][j_idx]
+            new_s = score_y(y, m, Sc)
+
+            import math
+            if new_s <= curr_s or random.random() < math.exp((curr_s - new_s) / T):
+                curr_s = new_s
+            else:
+                y[s_idx][j_idx] = 1 - y[s_idx][j_idx]
+
+            if it % 1000 == 0: T *= 0.98
+        print(f"  Restart {rest} best={curr_s}")
     return False
 
 if __name__ == "__main__":
-    for m in [3, 5]:
+    for m in [3, 5, 7]:
         run_m(m)
