@@ -28,3 +28,7 @@ To run the discovery engine:
 ```bash
 python3 cycles_even_m.py
 ```
+
+## Geometric Construction (Odd m)
+- `verify_spike.py`: Verifies the spike-function construction for odd $m$.
+- `GEOMETRIC_CONSTRUCTION.md`: Explains the spike-function framework and its parameters.
