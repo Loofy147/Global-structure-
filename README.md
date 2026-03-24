@@ -1,32 +1,53 @@
-# Claude's Cycles: Even-m and k=4 Investigations
+# Global Structure in Highly Symmetric Systems
 
-This repository explores the combinatorial problem introduced by Donald Knuth in "Claude's Cycles" (2026). We provide a unified algebraic framework for analyzing Hamiltonian decompositions of highly symmetric directed Cayley graphs.
+**Finding global structure in combinatorial problems via the short exact sequence**  
+**0 → H → G → G/H → 0**
 
-## Key Features
+Derived from Knuth's *Claude's Cycles* (Feb 2026). Converges on a universal framework governing Cayley digraphs, Latin squares, Hamming codes, magic squares, difference sets, and Pythagorean triples.
 
-- **Unified Algebraic Framework:** Based on the short exact sequence $0 \to H \to G \to G/H \to 0$, we formalize the "twisted translation" as a local-to-global lift.
-- **Parity Obstruction Theorem:** A proof that the column-uniform construction (r-triple) is impossible for even $m$ when $k=3$.
-- **$k=4$ Resolution:** We establish the arithmetic feasibility of $k=4$ via the (1,1,1,1) r-quadruple, resolving the parity obstruction observed for $k=3$.
-- **Prior Art Engagement:** The work is contextualized within the Alspach conjecture literature (Bermond et al. 1989, Liu 2003).
+---
 
-## Files
+## Repository
 
-- `paper1_even_m.py`: Main paper generation script (produces `paper1_even_m.pdf`).
-- `cycles_even_m.py`: Discovery engine for even $m$ and SA search.
-- `global_structure_refined.py`: Formal statement of the Master Theorem and SES framework.
-- `proof_k4_obstruction.py`: Proof that fiber-uniform $\sigma$ is impossible for $m=4, k=4$.
-
-## Usage
-
-To generate the paper:
-```bash
-pip install reportlab
-python3 paper1_even_m.py
+```
+core.py        8 exact weights · verifier · SA engine · hardcoded solutions
+engine.py      pipeline · domain registry · branch tree · classifying space
+theorems.py    9 theorems verified · moduli theorem · cross-domain table
+domains.py     all domains incl. P5 (non-abelian S_3) + P6 (product groups)
+frontiers.py   open problem solvers P1/P2/P3 · frontier status
+benchmark.py   v2.0 vs 6 alternatives · W4 correction · scaling
+README.md      this file
 ```
 
-To run the discovery engine:
+---
+
+## Quick Start
+
 ```bash
-python3 cycles_even_m.py
+# Prove m=4 k=3 impossible in 0.02ms
+python core.py
+
+# Run all 9 theorems
+python theorems.py
+
+# Analyse any domain
+python engine.py
+
+# Check open problems
+python frontiers.py --status
+
+# Benchmark
+python benchmark.py --quick
+```
+
+---
+
+## The Four Coordinates
+
+Every highly symmetric combinatorial problem reduces to the short exact sequence:
+
+```
+0  →  H  →  G  →  G/H  →  0
 ```
 
 ## Geometric Construction (Odd m)
