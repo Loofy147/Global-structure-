@@ -99,7 +99,7 @@ def extract_weights(m: int, k: int) -> Weights:
     search_exp = m * log2(lev) if lev > 0 else 0
     compression = search_exp / full_exp if full_exp > 0 else 1.0
 
-    # W7: solution lower bound — exact for m=3, lb for m≥5
+    # W7: solution lower bound — EXACT for m=3, lb for m≥5
     # phi(m) × coprime_b(m)^(k-1)  where coprime_b = m^(m-1)·phi(m)
     coprime_b = m**(m-1) * phi_m
     sol_lb = phi_m * coprime_b**(k-1) if r_count > 0 else 0
