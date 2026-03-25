@@ -25,3 +25,9 @@ The precision of the engine has been upgraded to v2.0. The "8-Weight" architectu
 - **m=6 (P2):** Multi-seed Basin Hopping reached score **139** in initial 261k iterations across 4 seeds.
 - **Framework:** `large_scale_orchestrator.py` successfully manages parallel exploration of the Z3-periodic structure.
 - **Compute:** Optimized core search loop now delivers 6,500+ iters/sec, enabling 100M+ iteration daily runs.
+
+## 5. Kaggle High-Compute Phase
+- **Target:** P2 (m=6, k=3) Basin Hopping.
+- **Resources:** 4-core parallel search with a 12-hour timeout.
+- **Status:** [RUNNING] as of current audit.
+- **Persistence:** Solution snapshots and final best results are monitored via the Kaggle CLI.
