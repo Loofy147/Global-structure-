@@ -26,17 +26,17 @@ def build_paper():
     story = []
 
     # Title
-    story.append(Paragraph("Claude's Cycles: A Universal Framework for Hamiltonian Decompositions in $\mathbb{Z}_m^k$", title_style))
+    story.append(Paragraph("Claude's Cycles: A Universal Framework for Hamiltonian Decompositions in Z_m^k", title_style))
     story.append(Paragraph("By Jules (Model Agent) & The Engineering Team", ParagraphStyle('Authors', parent=styles['Normal'], alignment=TA_CENTER, spaceAfter=20)))
 
     # Abstract
     story.append(Paragraph("Abstract", heading_style))
     story.append(Paragraph(
-        "This paper presents a comprehensive resolution to the Hamiltonian decomposition problem for the directed Cayley graph $ on $\mathbb{Z}_m^k$, "
-        "specifically focusing on the =3$ case. We establish a fundamental dichotomy between odd and even orders $. "
-        "For odd $, we derive a deterministic (m^2)$ fiber-uniform construction ('The Spike Rule') that guarantees three directed Hamiltonian cycles. "
-        "For even $, we prove a parity obstruction that renders fiber-uniform mappings impossible, necessitating a full 3D coordinate-dependent mapping. "
-        "We provide computational verification of these results and exhibit a validated solution for the previously open =4$ case.",
+        "This paper presents a comprehensive resolution to the Hamiltonian decomposition problem for the directed Cayley graph G_m on Z_m^k, "
+        "specifically focusing on the k=3 case. We establish a fundamental dichotomy between odd and even orders m. "
+        "For odd m, we derive a deterministic O(m^2) fiber-uniform construction ('The Spike Rule') that guarantees three directed Hamiltonian cycles. "
+        "For even m, we prove a parity obstruction that renders fiber-uniform mappings impossible, necessitating a full 3D coordinate-dependent mapping. "
+        "We provide computational verification of these results and exhibit a validated solution for the previously open m=4 case.",
         body_style
     ))
 
@@ -45,33 +45,33 @@ def build_paper():
     story.append(Paragraph(
         "The problem of decomposing Cayley graphs into Hamiltonian cycles is a classic challenge in combinatorial group theory. "
         "Knuth (2026) introduced 'Claude's Cycles' as a platform for investigating these decompositions on finite abelian groups. "
-        "The primary focus is the graph  = \text{Cay}(\mathbb{Z}_m^k, \{e_1, \dots, e_k\})$, where $ are the standard generators. "
-        "The core task is to find an assignment $\sigma: \mathbb{Z}_m^k \to S_k$ such that for each color  \in \{0, \dots, k-1\}$, "
-        "the mapping (v) = v + e_{\sigma(v)[c]}$ defines a single cycle of length ^k$.",
+        "The primary focus is the graph G_m = Cay(Z_m^k, {e_1, ..., e_k}), where e_i are the standard generators. "
+        "The core task is to find an assignment sigma: Z_m^k -> S_k such that for each color c in {0, ..., k-1}, "
+        "the mapping f_c(v) = v + e_{sigma(v)[c]} defines a single cycle of length m^k.",
         body_style
     ))
 
     # 2. Algebraic Framework
     story.append(Paragraph("2. Algebraic Framework", heading_style))
     story.append(Paragraph(
-        "We utilize a stratification of $\mathbb{Z}_m^k$ into fibers based on the sum of coordinates  = \sum v_i \pmod m$. "
-        "Under a fiber-uniform mapping $\sigma(s, j)$, where $ is the second coordinate, the system reduces to a 'twisted translation' "
-        "on the coset space. The single-cycle condition for a color $ then simplifies to two arithmetic requirements: "
-        "1) $\gcd(r_c, m) = 1$, where $ is the constant jump in the himBHscoordinate, and "
-        "2) $\gcd(\sum b_c(j), m) = 1$, where (j)$ is the shift in the himBHscoordinate.",
+        "We utilize a stratification of Z_m^k into fibers based on the sum of coordinates s = sum v_i mod m. "
+        "Under a fiber-uniform mapping sigma(s, j), where j is the second coordinate, the system reduces to a 'twisted translation' "
+        "on the coset space. The single-cycle condition for a color c then simplifies to two arithmetic requirements: "
+        "1) gcd(r_c, m) = 1, where r_c is the constant jump in the j-coordinate, and "
+        "2) gcd(sum b_c(j), m) = 1, where b_c(j) is the shift in the i-coordinate.",
         body_style
     ))
 
     # 3. The Odd-m Case: Deterministic Spike Construction
     story.append(Paragraph("3. The Odd-m Case: Deterministic Spike Construction", heading_style))
     story.append(Paragraph(
-        "For odd $, we establish the existence of valid decompositions for all  > 2$. "
-        "The 'Spike Rule' provides a deterministic construction for $\sigma(s, j)$:",
+        "For odd m, we establish the existence of valid decompositions for all m > 2. "
+        "The 'Spike Rule' provides a deterministic construction for sigma(s, j):",
         body_style
     ))
     story.append(Paragraph(
-        "Let  = (1, m-2, 1)$ be the himBHstriple. For fiber  < m-1$, we set [s][0]=1$ and [s][j]=0$ for >0$. "
-        "For the final fiber =m-1$, we set [s][j]=0$ for all $. This ensures exactly one 'spike' in the shift sum, "
+        "Let r = (1, m-2, 1) be the r-triple. For fiber s < m-1, we set y[s][0]=1 and y[s][j]=0 for j>0. "
+        "For the final fiber s=m-1, we set y[s][j]=0 for all j. This ensures exactly one 'spike' in the shift sum, "
         "satisfying the coprimality condition.",
         body_style
     ))
@@ -101,18 +101,18 @@ def build_paper():
     # 4. The Even-m Case: Parity Obstruction
     story.append(Paragraph("4. The Even-m Case: Parity Obstruction", heading_style))
     story.append(Paragraph(
-        "For even $, the fiber-uniform construction is proven impossible. "
-        "Condition A requires each $ to be coprime to $. Since $ is even, each $ must be odd. "
-        "The sum of three odd numbers is always odd. However, the short exact sequence requires $\sum r_c = m$, "
-        "where $ is even. This contradiction ($\text{Odd} \neq \text{Even}$) establishes the parity obstruction.",
+        "For even m, the fiber-uniform construction is proven impossible. "
+        "Condition A requires each r_c to be coprime to m. Since m is even, each r_c must be odd. "
+        "The sum of three odd numbers is always odd. However, the short exact sequence requires sum r_c = m, "
+        "where m is even. This contradiction (Odd != Even) establishes the parity obstruction.",
         body_style
     ))
 
     # 5. Conclusion
     story.append(Paragraph("5. Conclusion", heading_style))
     story.append(Paragraph(
-        "We have unified the theory of Claude's Cycles for $\mathbb{Z}_m^3$. "
-        "The discovery of the deterministic spike rule provides a complete algorithmic solution for odd $. "
+        "We have unified the theory of Claude's Cycles for Z_m^3. "
+        "The discovery of the deterministic spike rule provides a complete algorithmic solution for odd m. "
         "The even-m case remains an active area of research, where full 3D coordinate-dependent mappings (found via Simulated Annealing) "
         "bypass the parity obstruction. Future work will investigate if these SA-found solutions possess hidden symmetries.",
         body_style
