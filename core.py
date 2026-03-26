@@ -40,8 +40,8 @@ def verify_sigma(sigma, m):
         for _ in range(n):
             if curr in visited: break
             visited.add(curr)
-            s = sum(curr)%m; p = sigma.get((s, curr[1], curr[2]))
-            if p is None: p = sigma.get((s, curr[1]))
+            s = sum(curr)%m
+            p = sigma.get((s, curr[1]))
             if p is None: return False
             at = p[c]; curr = tuple((curr[d] + ARC_SHIFTS[at][d]) % m for d in range(3))
         if len(visited) != n: return False
@@ -128,9 +128,8 @@ def solve_spike(m, max_iter=200000):
                         if s in Sc[c]: c1 = c; break
                     for j in range(m):
                         c0 = A_fiber[s] if y[s][j] == 1 else B_fiber[s]; c2 = [c for c in range(3) if c not in [c0, c1]][0]
-                        p = [0,0,0]; p[0]=c0; p[1]=c1; p[2]=c2; inv = [0,0,0]
-                        for at, col_ in enumerate(p): inv[col_] = at
-                        sigma[(s, j)] = tuple(inv)
+                        p = [0,0,0]; p[c0]=0; p[c1]=1; p[c2]=2
+                        sigma[(s, j)] = tuple(p)
                 if verify_sigma(sigma, m): return sigma
                 else: cs = 20
             si, ji = random.randrange(m), random.randrange(m); y[si][ji] = 1-y[si][ji]; ns = score_y(y)
@@ -153,18 +152,77 @@ def _build_sa3(m):
 
 def solve(m, k=3, seed=42):
     if m % 2 != 0 and k == 3: return solve_spike(m)
+def construct_spike_sigma(m):
+    if m % 2 == 0: return None
+    Sc = [[0], list(range(1, m-1)), [m-1]]
+    A_fiber = []; B_fiber = []
+    for s in range(m):
+        c1 = -1
+        for c in range(3):
+            if s in Sc[c]: c1 = c; break
+        others = [c for c in range(3) if c != c1]
+        A_fiber.append(others[0]); B_fiber.append(others[1])
+    sigma = {}
+    for s in range(m):
+        c1 = -1
+        for c in range(3):
+            if s in Sc[c]: c1 = c; break
+        for j in range(m):
+            y_val = 1 if (s < m - 1 and j == 0) else 0
+            c0 = A_fiber[s] if y_val == 1 else B_fiber[s]
+            c2 = [c for c in range(3) if c not in [c0, c1]][0]
+            p = [0,0,0]; p[c0]=0; p[c1]=1; p[c2]=2
+            sigma[(s, j)] = tuple(p)
+    return sigma
+
     sol, _ = run_sa(m, seed=seed); return sol
 
-def valid_levels(m): return [tuple(range(m))] * 24
-def table_to_sigma(table, m): return {}
-def compose_Q(table, m): return [{i: (i+1)%(m*m) for i in range(m*m)}] * 3
+def valid_levels(m):
+    levels = []
+    for c1 in range(3):
+        others = [c for c in range(3) if c != c1]
+        for y in iprod([0, 1], repeat=m):
+            perms = []
+            for j in range(m):
+                c0 = others[0] if y[j] == 1 else others[1]
+                c2 = [c for c in range(3) if c not in [c0, c1]][0]
+                p = [0,0,0]
+                p[c0] = 0; p[c1] = 1; p[c2] = 2
+                perms.append(tuple(p))
+            levels.append(tuple(perms))
+    return levels
+
+def table_to_sigma(table, m):
+    sigma = {}
+    for s in range(m):
+        for j in range(m):
+            sigma[(s, j)] = table[s][j]
+    return sigma
+
+def compose_Q(table, m):
+    Qs = []
+    for c in range(3):
+        Q = {}
+        for i in range(m):
+            for j in range(m):
+                curr_i, curr_j = i, j
+                for s in range(m):
+                    p = table[s][curr_j]
+                    arc = p[c]
+                    if arc == 0: curr_i = (curr_i + 1) % m
+                    elif arc == 1: curr_j = (curr_j + 1) % m
+                Q[(i, j)] = (curr_i, curr_j)
+        Qs.append(Q)
+    return Qs
+
 def is_single_cycle(Q, m):
     if not Q: return False
-    n = m*m; visited = bytearray(n); curr = 0; count = 0
-    while not visited[curr]: visited[curr] = 1; count += 1; curr = Q.get(curr, 0)
+    n = m*m; visited = set(); curr = (0, 0); count = 0
+    while curr not in visited:
+        visited.add(curr); count += 1; curr = Q[curr]
     return count == n
 
-PRECOMPUTED = { (3,3): solve_spike(3) }
+PRECOMPUTED = { (m,3): construct_spike_sigma(m) for m in [3, 5, 7] }
 SOLUTION_M4 = { (s,j,k): (0,1,2) for s in range(4) for j in range(4) for k in range(4) }
 _ALL_P3 = list(permutations(range(3)))
 _FIBER_SHIFTS = [(1,0,0), (0,1,0), (0,0,1)]
