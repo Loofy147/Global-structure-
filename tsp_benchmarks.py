@@ -17,13 +17,13 @@ class NearestNeighborSolver:
         curr = (0, 0)
         path = []
         metrics_list = []
-        for _ in range(self.tsp.n):
+        for step in range(self.tsp.n):
             visited.add(curr)
             best_gen_idx = -1
             best_local_score = float('inf')
             for idx, gen in enumerate(self.tsp.generators):
                 next_node = ((curr[0] + gen[0]) % self.tsp.m, (curr[1] + gen[1]) % self.tsp.m)
-                if len(visited) < self.tsp.n:
+                if step < self.tsp.n - 1:
                     if next_node not in visited:
                         m_edge = self.tsp.weights[gen]
                         local_score = sum(v * w for v, w in zip(m_edge.to_vec(), self.weights_vector))
@@ -82,9 +82,9 @@ class GeneticAlgorithmSolver:
         self.weights_vector = weights_vector
         self.constraints = constraints
 
-    def solve(self, pop_size: int = 50, generations: int = 100) -> Tuple[Optional[List[int]], float, Optional[EdgeMetrics], int]:
+    def solve(self, pop_size: int = 100, generations: int = 200) -> Tuple[Optional[List[int]], float, Optional[EdgeMetrics], int]:
         population = []
-        for _ in range(pop_size * 2): # Try to generate more
+        for _ in range(pop_size * 2):
             p = self._generate_random_path()
             if p: population.append(p)
         if not population: return None, float('inf'), None, 0
@@ -95,9 +95,10 @@ class GeneticAlgorithmSolver:
             new_pop = population[:elite_size]
             while len(new_pop) < pop_size:
                 p1, p2 = random.sample(new_pop, 2) if len(new_pop) >= 2 else (new_pop[0], new_pop[0])
-                child = self._crossover(p1, p2)
-                if random.random() < 0.2: child = self._mutate(child)
-                new_pop.append(child)
+                pt = random.randint(1, self.tsp.n - 1)
+                child = p1[:pt] + p2[pt:]
+                if self.tsp.evaluate_path(child): new_pop.append(child)
+                else: new_pop.append(p1)
             population = new_pop
 
         best_path = sorted(population, key=lambda p: self._fitness(p))[0]
@@ -123,16 +124,6 @@ class GeneticAlgorithmSolver:
     def _fitness(self, path):
         res = self.tsp.evaluate_path(path, self.constraints)
         return self.tsp.get_score(res[0], self.weights_vector, res[1]) if res else 1e18
-
-    def _crossover(self, p1, p2):
-        point = random.randint(1, self.tsp.n - 2)
-        child = p1[:point] + p2[point:]
-        return child if self.tsp.evaluate_path(child) else p1
-
-    def _mutate(self, path):
-        idx = random.randint(0, self.tsp.n - 1)
-        new_path = list(path); new_path[idx] = random.randrange(self.tsp.k)
-        return new_path if self.tsp.evaluate_path(new_path) else path
 
 class AntColonySolver:
     def __init__(self, tsp: CayleyTSP, weights_vector: List[float], constraints: Constraints = None):
