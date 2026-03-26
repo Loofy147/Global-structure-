@@ -10,13 +10,14 @@ Derived from Knuth's *Claude's Cycles* (Feb 2026). Converges on a universal fram
 ## Repository
 
 ```
-core.py        8 exact weights · verifier · SA engine · hardcoded solutions
-engine.py      pipeline · domain registry · branch tree · classifying space
-theorems.py    9 theorems verified · moduli theorem · cross-domain table
-domains.py     all domains incl. P5 (non-abelian S_3) + P6 (product groups)
-frontiers.py   open problem solvers P1/P2/P3 · frontier status
-benchmark.py   v2.0 vs 6 alternatives · W4 correction · scaling
-README.md      this file
+core.py                 8 weights · verifier · Deterministic Spike Constructor · SA engine
+engine.py               pipeline · domain registry · classifying space
+theorems.py             9 theorems verified · moduli theorem · cross-domain table
+domains.py              all domains incl. P5 (non-abelian S_3) + P6 (product groups)
+frontiers.py            open problem solvers P1/P2/P3 · parity proof
+benchmark_spike.py      O(m^2) construction benchmark for odd m
+global_research_paper.pdf  The formal project findings and proofs
+README.md               this file
 ```
 
 ---
@@ -24,20 +25,14 @@ README.md      this file
 ## Quick Start
 
 ```bash
-# Prove m=4 k=3 impossible in 0.02ms
-python core.py
+# Run deterministic construction and verification for odd m
+python3 benchmark_spike.py
+
+# Prove m=4 k=3 impossible via parity obstruction
+python3 engine.py
 
 # Run all 9 theorems
-python theorems.py
-
-# Analyse any domain
-python engine.py
-
-# Check open problems
-python frontiers.py --status
-
-# Benchmark
-python benchmark.py --quick
+python3 theorems.py
 ```
 
 ---
@@ -50,6 +45,6 @@ Every highly symmetric combinatorial problem reduces to the short exact sequence
 0  →  H  →  G  →  G/H  →  0
 ```
 
-## Geometric Construction (Odd m)
-- `verify_spike.py`: Verifies the spike-function construction for odd $m$.
-- `GEOMETRIC_CONSTRUCTION.md`: Explains the spike-function framework and its parameters.
+## Key Result: The Spike Rule (Odd m)
+- `core.py: construct_spike_sigma(m)`: Deterministically builds a valid Hamiltonian decomposition for any odd $m$ in $O(m^2)$.
+- `GEOMETRIC_CONSTRUCTION.md`: Theoretical background on the spike-function framework.
