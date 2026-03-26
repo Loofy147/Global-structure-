@@ -1,0 +1,65 @@
+[{"stream_name":"stdout","time":0.949706947,"data":"GLOBAL STRUCTURE TSP BENCHMARK (KAGGLE - INTENSIVE V4)\n"}
+,{"stream_name":"stdout","time":0.949758127,"data":"m  Solver                Score    Dist   Time  Risk  Fuel   Cost Viol  Stab   Div  Time(ms)\n"}
+,{"stream_name":"stdout","time":0.949761917,"data":"-------------------------------------------------------------------------------------------\n"}
+,{"stream_name":"stdout","time":0.975385223,"data":"5  FiberUniform       102223.3   340.6   42.2  2.77 238.6  917.2    1  0.00  0.00       2.5\n"}
+,{"stream_name":"stdout","time":0.976348002,"data":"5  NearestNeighbor    101841.1   351.3   34.6  2.47 127.2  814.8    1  0.00  0.80       0.1\n"}
+,{"stream_name":"stdout","time":0.98061638,"data":"5  Genetic                 DNF\n"}
+,{"stream_name":"stdout","time":1.0528552389999999,"data":"5  AntColony          102085.1   338.5   45.5  2.78 182.9  875.1    1  0.00  0.64      36.2\n"}
+,{"stream_name":"stdout","time":1.052977649,"data":"-------------------------------------------------------------------------------------------\n"}
+,{"stream_name":"stdout","time":1.126616538,"data":"6  FiberUniform       102437.2   457.8  145.9  3.99 152.7  545.4    1  0.00  0.00       6.2\n"}
+,{"stream_name":"stdout","time":1.128061107,"data":"6  NearestNeighbor    102398.5   434.4  153.9  3.96 154.7  489.7    1  0.00  0.17       0.1\n"}
+,{"stream_name":"stdout","time":1.133723584,"data":"6  Genetic                 DNF\n"}
+,{"stream_name":"stdout","time":1.181856967,"data":"6  AntColony               DNF\n"}
+,{"stream_name":"stdout","time":1.181893127,"data":"-------------------------------------------------------------------------------------------\n"}
+,{"stream_name":"stdout","time":1.5736184770000001,"data":"7  FiberUniform       102874.5   421.3   63.0  5.41 114.7 1368.6    1  0.00  0.00      33.1\n"}
+,{"stream_name":"stdout","time":1.575473266,"data":"7  NearestNeighbor    102659.8   299.9   65.9  4.55 377.9  819.4    1  0.10  0.86       0.2\n"}
+,{"stream_name":"stdout","time":1.5825401719999999,"data":"7  Genetic                 DNF\n"}
+,{"stream_name":"stdout","time":1.6452407770000002,"data":"7  AntColony               DNF\n"}
+,{"stream_name":"stdout","time":1.645277117,"data":"-------------------------------------------------------------------------------------------\n"}
+,{"stream_name":"stdout","time":2.961914958,"data":"8  FiberUniform       104202.0   466.8  311.5  2.30 484.8  977.7    1  0.00  0.00     103.0\n"}
+,{"stream_name":"stdout","time":2.964114357,"data":"8  NearestNeighbor    103866.2   591.9  205.7  2.88 545.2  867.9    1  0.10  1.00       0.2\n"}
+,{"stream_name":"stdout","time":2.9726195520000003,"data":"8  Genetic                 DNF\n"}
+,{"stream_name":"stdout","time":3.048603179,"data":"8  AntColony               DNF\n"}
+,{"stream_name":"stdout","time":3.048638739,"data":"-------------------------------------------------------------------------------------------\n"}
+,{"stream_name":"stdout","time":8.096022347,"data":"9  FiberUniform       104624.8   783.6  220.9  2.84 701.0 1050.5    1  0.00  0.00     418.3\n"}
+,{"stream_name":"stdout","time":8.099234505,"data":"9  NearestNeighbor    104620.6   742.0  202.2  3.91 693.7 1089.6    1  0.03  0.11       0.4\n"}
+,{"stream_name":"stdout","time":8.10954344,"data":"9  Genetic                 DNF\n"}
+,{"stream_name":"stdout","time":8.202061998,"data":"9  AntColony               DNF\n"}
+,{"stream_name":"stdout","time":8.202099428,"data":"-------------------------------------------------------------------------------------------\n"}
+,{"stream_name":"stdout","time":23.595616581,"data":"10 FiberUniform       107232.3  1298.4  352.4  4.84 591.4 2505.3    1  0.00  0.00    1264.7\n"}
+,{"stream_name":"stdout","time":23.599560699,"data":"10 NearestNeighbor    107232.3  1298.4  352.4  4.84 591.4 2505.3    1  0.00  0.20       0.5\n"}
+,{"stream_name":"stdout","time":23.611578972,"data":"10 Genetic                 DNF\n"}
+,{"stream_name":"stdout","time":23.724821478,"data":"10 AntColony               DNF\n"}
+,{"stream_name":"stdout","time":23.724860618,"data":"-------------------------------------------------------------------------------------------\n"}
+,{"stream_name":"stdout","time":99.01529869,"data":"11 FiberUniform       110411.8  1167.2  375.4 21.60 707.2 3793.4    1  0.33  0.00    6209.7\n"}
+,{"stream_name":"stdout","time":99.01934354,"data":"11 NearestNeighbor    109133.1   758.3  279.1  5.04 995.5 4484.6    1  0.02  1.00       0.5\n"}
+,{"stream_name":"stdout","time":99.03301615,"data":"11 Genetic                 DNF\n"}
+,{"stream_name":"stdout","time":99.164238877,"data":"11 AntColony               DNF\n"}
+,{"stream_name":"stdout","time":99.164277607,"data":"-------------------------------------------------------------------------------------------\n"}
+,{"stream_name":"stdout","time":285.078748801,"data":"12 FiberUniform       108708.8  1391.4  504.3 20.00 504.9 1786.0    1  0.00  0.00  185914.4\n"}
+,{"stream_name":"stdout","time":285.07931741,"data":"12 NearestNeighbor    108413.2  1413.4  522.9 18.48 480.8 1575.2    1  0.00  0.17       0.6\n"}
+,{"stream_name":"stdout","time":285.095728137,"data":"12 Genetic                 DNF\n"}
+,{"stream_name":"stdout","time":285.246856938,"data":"12 AntColony               DNF\n"}
+,{"stream_name":"stdout","time":285.246896869,"data":"-------------------------------------------------------------------------------------------\n"}
+,{"stream_name":"stdout","time":550.580613492,"data":"13 FiberUniform       109009.9  1238.3  296.5 10.05 1342.4 2599.1    1  0.00  0.00  265333.6\n"}
+,{"stream_name":"stdout","time":550.581291482,"data":"13 NearestNeighbor    109009.9  1238.3  296.5 10.05 1342.4 2599.1    1  0.00  0.15       0.8\n"}
+,{"stream_name":"stdout","time":550.599431729,"data":"13 Genetic                 DNF\n"}
+,{"stream_name":"stdout","time":550.769142399,"data":"13 AntColony               DNF\n"}
+,{"stream_name":"stdout","time":550.769195659,"data":"-------------------------------------------------------------------------------------------\n"}
+,{"stream_name":"stdout","time":788.418247019,"data":"14 FiberUniform       115486.2  1210.2  748.6 26.26 1795.1 4316.9    1  0.00  0.00  237649.0\n"}
+,{"stream_name":"stdout","time":788.419080559,"data":"14 NearestNeighbor    115478.2  1230.0  751.0 24.82 1786.2 4438.5    1  0.00  0.07       0.9\n"}
+,{"stream_name":"stdout","time":788.440185714,"data":"14 Genetic                 DNF\n"}
+,{"stream_name":"stdout","time":788.63262531,"data":"14 AntColony               DNF\n"}
+,{"stream_name":"stdout","time":788.63267054,"data":"-------------------------------------------------------------------------------------------\n"}
+,{"stream_name":"stdout","time":1086.419497548,"data":"15 FiberUniform       120720.0  3154.5  287.6 33.56 818.3 11135.1    1  0.00  0.00  297786.7\n"}
+,{"stream_name":"stdout","time":1086.420353618,"data":"15 NearestNeighbor    114516.4  1773.2  509.7 32.60 940.3 5053.6    1  0.00  0.93       0.8\n"}
+,{"stream_name":"stdout","time":1086.443027905,"data":"15 Genetic                 DNF\n"}
+,{"stream_name":"stdout","time":1086.652990637,"data":"15 AntColony               DNF\n"}
+,{"stream_name":"stdout","time":1086.653033527,"data":"-------------------------------------------------------------------------------------------\n"}
+,{"stream_name":"stderr","time":1089.340982954,"data":"/usr/local/lib/python3.12/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":1089.341069763,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":1089.847111437,"data":"/usr/local/lib/python3.12/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":1089.847137447,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":1091.946352091,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":1093.430641286,"data":"[NbConvertApp] Writing 347565 bytes to __results__.html\n"}
+]
