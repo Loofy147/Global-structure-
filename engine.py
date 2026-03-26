@@ -23,11 +23,11 @@ class Domain:
 
 class Engine:
     def __init__(self):
-        self._domains: Dict[str, Domain] = {}
+        self.registry: Dict[str, Domain] = {}
         self._cache = {}
 
     def register(self, domain: Domain):
-        self._domains[domain.name] = domain
+        self.registry[domain.name] = domain
         return self
 
     def run(self, m: int, k: int=3, verbose: bool=False):
@@ -47,9 +47,17 @@ class Engine:
         self._cache[(m,k)] = res
         return res
 
+    def print_results(self):
+        print(f"\n{W_}DOMAIN REGISTRY SUMMARY{Z_}")
+        print(f"  {'Domain Name':<25} {'G':<15} {'k':<3} {'m':<3} {'Status'}")
+        print("  "+"─"*60)
+        for name, d in self.registry.items():
+            col = G_ if d.status == Status.SOLVED else (R_ if d.status == Status.IMPOSSIBLE else Y_)
+            print(f"  {name:<25} {d.G:<15} {d.k:<3} {d.m:<3} {col}{d.status.value}{Z_}")
+
     def print_space(self, m_max=12, k_max=7):
         print(f"\n{W_}CLASSIFYING SPACE m=2..{m_max}, k=2..{k_max}{Z_}")
-        print(f"  m\k " + " ".join(f"k={k:<2}" for k in range(2, k_max+1)))
+        print(f"  m\\k " + " ".join(f"k={k:<2}" for k in range(2, k_max+1)))
         for m in range(2, m_max+1):
             row = f"  {m:>2}  "
             for k in range(2, k_max+1):
@@ -62,7 +70,10 @@ class Engine:
             print(row)
 
 if __name__ == "__main__":
+    from domains import load_all_domains
     e = Engine()
+    load_all_domains(e)
     for m,k in [(3,3),(4,3),(4,4),(5,3),(6,3),(7,3)]:
         print(f"  {e.run(m,k)}")
     e.print_space()
+    e.print_results()
