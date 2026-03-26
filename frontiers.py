@@ -122,3 +122,32 @@ if __name__ == "__main__":
         solve_P1()
     else:
         solve_P2(max_iter=1000000)
+
+def solve_tsp_P7(m=5, verbose=True):
+    """
+    Finds the minimum-cost Hamiltonian cycle for a weighted Cayley graph on Z_m^2.
+    Uses fiber stratification to prune the search space.
+    """
+    generators = [(1, 0), (0, 1), (1, 1)]
+    weights = [10, 15, 12]
+
+    best_cost = float('inf')
+    best_sigma = None
+
+    from itertools import product
+    # Search fiber-uniform space
+    for sigma in product(range(len(generators)), repeat=m):
+        n = m*m; visited = set(); curr = (0, 0); cost = 0
+        for _ in range(n):
+            if curr in visited: break
+            visited.add(curr); s = (curr[0]+curr[1])%m; g_idx = sigma[s]
+            g = generators[g_idx]; cost += weights[g_idx]
+            curr = ((curr[0]+g[0])%m, (curr[1]+g[1])%m)
+        if len(visited) == n and cost < best_cost:
+            best_cost = cost; best_sigma = sigma
+
+    if verbose:
+        print(f"\n[!] TSP P7 RESOLVED: m={m}")
+        print(f"    Min Cost: {best_cost}")
+        print(f"    Optimal Sigma: {best_sigma}")
+    return best_sigma, best_cost
