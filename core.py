@@ -161,3 +161,23 @@ def table_to_sigma(table, m):
         for j in range(m):
             sigma[(s, j)] = table[s][j]
     return sigma
+
+def solve(m, k=3, seed=42):
+    if m % 2 != 0 and k == 3: return construct_spike_sigma(m)
+    sol, _ = run_sa(m, seed=seed)
+    return sol
+
+def run_sa(m, seed=0, max_iter=1000000):
+    random.seed(seed); n, arc_s, pa = _build_sa3(m); nP = 6
+    sigma = [random.randrange(nP) for _ in range(n)]; cs = _sa_score(sigma, arc_s, pa, n); bs = cs; best = sigma[:]
+    T = 1.0; t0 = time_now()
+    for it in range(max_iter):
+        if cs == 0: break
+        v = random.randrange(n); old = sigma[v]; new = random.randrange(nP); sigma[v] = new
+        ns = _sa_score(sigma, arc_s, pa, n); d = ns - cs
+        if d < 0 or random.random() < math.exp(-d/max(T, 1e-9)):
+            cs = ns
+            if cs < bs: bs = cs; best = sigma[:]
+        else: sigma[v] = old
+        if it % 10000 == 0: T *= 0.99
+    return best if bs == 0 else None, {'best': bs, 'iters': it+1, 'elapsed': time_now()-t0}
