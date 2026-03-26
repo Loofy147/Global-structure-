@@ -152,6 +152,29 @@ def _build_sa3(m):
 
 def solve(m, k=3, seed=42):
     if m % 2 != 0 and k == 3: return solve_spike(m)
+def construct_spike_sigma(m):
+    if m % 2 == 0: return None
+    Sc = [[0], list(range(1, m-1)), [m-1]]
+    A_fiber = []; B_fiber = []
+    for s in range(m):
+        c1 = -1
+        for c in range(3):
+            if s in Sc[c]: c1 = c; break
+        others = [c for c in range(3) if c != c1]
+        A_fiber.append(others[0]); B_fiber.append(others[1])
+    sigma = {}
+    for s in range(m):
+        c1 = -1
+        for c in range(3):
+            if s in Sc[c]: c1 = c; break
+        for j in range(m):
+            y_val = 1 if (s < m - 1 and j == 0) else 0
+            c0 = A_fiber[s] if y_val == 1 else B_fiber[s]
+            c2 = [c for c in range(3) if c not in [c0, c1]][0]
+            p = [0,0,0]; p[c0]=0; p[c1]=1; p[c2]=2
+            sigma[(s, j)] = tuple(p)
+    return sigma
+
     sol, _ = run_sa(m, seed=seed); return sol
 
 def valid_levels(m):
@@ -199,7 +222,7 @@ def is_single_cycle(Q, m):
         visited.add(curr); count += 1; curr = Q[curr]
     return count == n
 
-PRECOMPUTED = { (3,3): solve_spike(3) }
+PRECOMPUTED = { (m,3): construct_spike_sigma(m) for m in [3, 5, 7] }
 SOLUTION_M4 = { (s,j,k): (0,1,2) for s in range(4) for j in range(4) for k in range(4) }
 _ALL_P3 = list(permutations(range(3)))
 _FIBER_SHIFTS = [(1,0,0), (0,1,0), (0,0,1)]
