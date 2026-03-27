@@ -273,3 +273,70 @@ class TwoOptSolver:
                 if improved: break
 
         return current_path, current_score, current_res[0], current_res[1]
+
+class FiberUniformSASolver:
+    def __init__(self, tsp: CayleyTSP, weights_vector: List[float], constraints: Constraints = None):
+        self.tsp = tsp
+        self.weights_vector = weights_vector
+        self.constraints = constraints
+
+    def solve(self, iterations: int = 20000, T_init: float = 10.0, T_min: float = 0.001) -> Tuple[Optional[List[int]], float, Optional[EdgeMetrics], int]:
+        m = self.tsp.m
+        k = self.tsp.k
+
+        def get_score(sigma_tuple):
+            res = self.tsp.evaluate_sigma(sigma_tuple, self.constraints)
+            if res:
+                metrics, viols = res
+                return self.tsp.get_score(metrics, self.weights_vector, viols), res
+            return 1e18, None
+
+        # Try to find a valid initial sigma
+        current_sigma = [random.randrange(k) for _ in range(m)]
+        current_score, current_res = get_score(tuple(current_sigma))
+
+        if current_score > 1e17:
+            # Randomly search for a valid starting point for a bit
+            for _ in range(min(5000, k**m)):
+                tmp = [random.randrange(k) for _ in range(m)]
+                s, r = get_score(tuple(tmp))
+                if s < 1e17:
+                    current_sigma = tmp
+                    current_score = s
+                    current_res = r
+                    break
+
+        best_sigma = list(current_sigma)
+        best_score = current_score
+        best_res = current_res
+
+        T = T_init
+        alpha = (T_min / T_init) ** (1.0 / iterations)
+
+        for i in range(iterations):
+            idx = random.randrange(m)
+            old_val = current_sigma[idx]
+            new_val = (old_val + random.randint(1, k-1)) % k
+
+            current_sigma[idx] = new_val
+            score, res = get_score(tuple(current_sigma))
+
+            delta = score - current_score
+            # If current_score is 1e18 and score is 1e18, delta is 0.
+            # We should probably allow moving between non-Hamiltonian states to find one.
+            if delta < 0 or random.random() < math.exp(-delta / max(T, 1e-9)):
+                current_score = score
+                current_res = res
+                if current_score < best_score:
+                    best_score = current_score
+                    best_sigma = list(current_sigma)
+                    best_res = current_res
+            else:
+                current_sigma[idx] = old_val
+
+            T *= alpha
+
+        if best_res:
+            metrics, viols = best_res
+            return self.tsp.sigma_to_path(tuple(best_sigma)), best_score, metrics, viols
+        return None, float('inf'), None, 0
