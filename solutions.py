@@ -18,3 +18,10 @@ def get_solution(m: int) -> Optional[List[int]]:
 def known_m_values() -> List[int]:
     """Return sorted list of m values with hardcoded solutions."""
     return sorted(_KNOWN.keys())
+
+# Z4xZ6 k=2 verified solution
+# Coset choice (0, 1) -> sigma(i,j) = (0, 1) if (i+j)%2==0 else (1, 0)
+SOLUTION_Z4X6 = {(i, j): ((0, 1) if (i+j)%2 == 0 else (1, 0)) for i in range(4) for j in range(6)}
+
+def get_z4x6_solution():
+    return SOLUTION_Z4X6

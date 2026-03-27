@@ -32,6 +32,9 @@ def extract_weights(m: int, k: int) -> Weights:
                    compression=round(compression,6), sol_lb=sol_lb, orbit_size=m**(m-1),
                    coprime_elems=cp)
 
+_ALL_P3 = list(permutations(range(3)))
+_FIBER_SHIFTS = [(1,0,0), (0,1,0), (0,0,1)]
+
 def verify_sigma(sigma, m):
     if not sigma: return False
     n = m**3; k_ = 3
@@ -41,8 +44,8 @@ def verify_sigma(sigma, m):
         arc_s[v][0] = ((i+1)%m)*m*m + j*m + k
         arc_s[v][1] = i*m*m + ((j+1)%m)*m + k
         arc_s[v][2] = i*m*m + j*m + (k+1)%m
-    pa = [[None]*k_ for _ in range(6)]; ALL_P = list(permutations(range(3)))
-    for pi, p in enumerate(ALL_P):
+    pa = [[None]*k_ for _ in range(6)]
+    for pi, p in enumerate(_ALL_P3):
         for at, c in enumerate(p): pa[pi][c] = at
     if isinstance(sigma, dict):
         sigma_list = [0] * n
@@ -51,7 +54,7 @@ def verify_sigma(sigma, m):
             p = sigma.get((i, j, k))
             if p is None: p = sigma.get(( (i+j+k)%m, j ))
             if p is None: return False
-            sigma_list[v] = ALL_P.index(p) if not isinstance(p, int) else p
+            sigma_list[v] = _ALL_P3.index(p) if not isinstance(p, int) else p
         sigma = sigma_list
     vis = bytearray(n)
     for c in range(3):
@@ -70,13 +73,14 @@ def _build_sa3(m):
         arc_s[v][0] = ((i+1)%m)*m*m + j*m + k
         arc_s[v][1] = i*m*m + ((j+1)%m)*m + k
         arc_s[v][2] = i*m*m + j*m + (k+1)%m
-    pa = [[None]*k_ for _ in range(6)]; ALL_P = list(permutations(range(3)))
-    for pi, p in enumerate(ALL_P):
+    pa = [[None]*k_ for _ in range(6)]
+    for pi, p in enumerate(_ALL_P3):
         for at, c in enumerate(p): pa[pi][c] = at
     return n, arc_s, pa
 
-def _sa_score(sigma, arc_s, pa, n):
-    vis = bytearray(n); total = 0
+def _sa_score(sigma, arc_s, pa, n, vis_buffer=None):
+    vis = vis_buffer if vis_buffer is not None else bytearray(n)
+    total = 0
     for c in range(3):
         comps = 0; vis[:] = b'\x00' * n
         for s in range(n):
@@ -88,26 +92,27 @@ def _sa_score(sigma, arc_s, pa, n):
 
 def construct_spike_sigma(m, seed=42):
     if m % 2 == 0: return None
-    n, arc_s, pa = _build_sa3(m); nP = 6; ALL_P = list(permutations(range(3))); rng = random.Random(seed)
+    n, arc_s, pa = _build_sa3(m); nP = 6; rng = random.Random(seed)
     state = [[rng.randrange(nP) for _ in range(m)] for _ in range(m)]
+    vis_buf = bytearray(n)
     def get_sigma(st):
         sig = [0]*n
         for v in range(n):
             i, rem = divmod(v, m*m); j, k = divmod(rem, m)
             sig[v] = st[(i+j+k)%m][j]
         return sig
-    cur_sig = get_sigma(state); cur_score = _sa_score(cur_sig, arc_s, pa, n); T = 1.0
+    cur_sig = get_sigma(state); cur_score = _sa_score(cur_sig, arc_s, pa, n, vis_buf); T = 1.0
     for it in range(100000 if m < 10 else 200000):
         if cur_score == 0: break
         si, ji = rng.randrange(m), rng.randrange(m); old = state[si][ji]; state[si][ji] = rng.randrange(nP)
-        nsig = get_sigma(state); nscore = _sa_score(nsig, arc_s, pa, n)
+        nsig = get_sigma(state); nscore = _sa_score(nsig, arc_s, pa, n, vis_buf)
         if nscore <= cur_score or rng.random() < math.exp((cur_score-nscore)/T): cur_score = nscore
         else: state[si][ji] = old
         if it % 1000 == 0: T *= 0.98
     if cur_score == 0:
         res = {}
         for s in range(m):
-            for j in range(m): res[(s, j)] = ALL_P[state[s][j]]
+            for j in range(m): res[(s, j)] = _ALL_P3[state[s][j]]
         return res
     return None
 
@@ -116,8 +121,47 @@ def solve_spike(m, max_iter=200000): return construct_spike_sigma(m)
 PRECOMPUTED = { (m,3): construct_spike_sigma(m) for m in [3, 5] }
 SOLUTION_M4 = [1, 1, 5, 5, 1, 0, 0, 5, 2, 3, 3, 4, 3, 4, 4, 1, 1, 5, 1, 0, 2, 4, 3, 4, 2, 5, 4, 0, 5, 1, 0, 2, 1, 2, 2, 4, 1, 0, 4, 5, 5, 1, 0, 3, 1, 2, 5, 5, 3, 5, 4, 2, 2, 1, 1, 1, 1, 1, 5, 4, 5, 3, 1, 4]
 
+def run_sa(m, seed=0, max_iter=3000000, T_init=2.0, T_min=0.001, verbose=False):
+    random.seed(seed); n, arc_s, pa = _build_sa3(m); nP = 6; vis_buf = bytearray(n)
+    sigma = [random.randrange(nP) for _ in range(n)]
+    cs = _sa_score(sigma, arc_s, pa, n, vis_buf); bs = cs; best = sigma[:]
+    T = T_init; cool = (T_min/T_init)**(1.0/max_iter); stall = 0; reheats = 0; t0 = time_now()
+    for it in range(max_iter):
+        if cs == 0: break
+        if cs <= 4:
+            v_idx = random.randrange(n); old = sigma[v_idx]
+            for new in range(nP):
+                if new == old: continue
+                sigma[v_idx] = new
+                ns = _sa_score(sigma, arc_s, pa, n, vis_buf)
+                if ns < cs:
+                    cs = ns
+                    if cs < bs: bs = cs; best = sigma[:]
+                    break
+                sigma[v_idx] = old
+            if cs == 0: break
+            T *= cool; continue
+        v = random.randrange(n); old = sigma[v]; new = random.randrange(nP)
+        sigma[v] = new; ns = _sa_score(sigma, arc_s, pa, n, vis_buf); d = ns - cs
+        if d < 0 or random.random() < math.exp(-d/max(T, 1e-9)):
+            cs = ns
+            if cs < bs: bs = cs; best = sigma[:]; stall = 0
+            else: stall += 1
+        else: sigma[v] = old; stall += 1
+        if stall > 100000:
+            T = T_init / (2**(reheats+1)); reheats += 1; stall = 0; sigma = best[:]; cs = bs
+        T *= cool
+        if verbose and it % 100000 == 0:
+            print(f"it={it} best={bs} score={cs} T={T:.4f} reh={reheats}")
+    return best if bs == 0 else None, {'best': bs, 'iters': it+1, 'elapsed': time_now()-t0, 'reheats': reheats}
+
+def solve(m, k=3, seed=42):
+    if m % 2 != 0 and k == 3: return construct_spike_sigma(m)
+    sol, _ = run_sa(m, seed=seed)
+    return sol
+
 def valid_levels(m):
-    levels = []; ALL_P = list(permutations(range(3)))
+    levels = []
     for c1 in range(3):
         others = [c for c in range(3) if c != c1]
         for y in iprod([0, 1], repeat=m):
@@ -152,9 +196,6 @@ def is_single_cycle(Q, m):
         visited.add(curr); count += 1; curr = Q[curr]
     return count == n
 
-_ALL_P3 = list(permutations(range(3)))
-_FIBER_SHIFTS = [(1,0,0), (0,1,0), (0,0,1)]
-
 def table_to_sigma(table, m):
     sigma = {}
     for s in range(m):
@@ -162,22 +203,20 @@ def table_to_sigma(table, m):
             sigma[(s, j)] = table[s][j]
     return sigma
 
-def solve(m, k=3, seed=42):
-    if m % 2 != 0 and k == 3: return construct_spike_sigma(m)
-    sol, _ = run_sa(m, seed=seed)
-    return sol
+def count_coprime_sum_functions(m):
+    """
+    Closed-form for N_b(m), the number of functions b: Z_m -> Z_m such that sum(b) is coprime to m.
+    N_b(m) = m^(m-1) * phi(m)
+    """
+    phi_m = sum(1 for r in range(1, m) if gcd(r, m) == 1)
+    return (m**(m-1)) * phi_m
 
-def run_sa(m, seed=0, max_iter=1000000):
-    random.seed(seed); n, arc_s, pa = _build_sa3(m); nP = 6
-    sigma = [random.randrange(nP) for _ in range(n)]; cs = _sa_score(sigma, arc_s, pa, n); bs = cs; best = sigma[:]
-    T = 1.0; t0 = time_now()
-    for it in range(max_iter):
-        if cs == 0: break
-        v = random.randrange(n); old = sigma[v]; new = random.randrange(nP); sigma[v] = new
-        ns = _sa_score(sigma, arc_s, pa, n); d = ns - cs
-        if d < 0 or random.random() < math.exp(-d/max(T, 1e-9)):
-            cs = ns
-            if cs < bs: bs = cs; best = sigma[:]
-        else: sigma[v] = old
-        if it % 10000 == 0: T *= 0.99
-    return best if bs == 0 else None, {'best': bs, 'iters': it+1, 'elapsed': time_now()-t0}
+def moduli_formula_m3():
+    """
+    Exact solution count for |M_3(G_3)|.
+    |M| = phi(3) * N_b(3)^(3-1) = 2 * 18^2 = 648.
+    """
+    m, k = 3, 3
+    phi_m = 2
+    nb = count_coprime_sum_functions(m)
+    return phi_m * (nb**(k-1))

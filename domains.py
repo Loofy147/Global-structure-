@@ -120,3 +120,27 @@ if __name__ == "__main__":
     analyse_P6_product_groups()
     analyse_magic_squares()
     analyse_tsp(5)
+
+def analyse_Z4x6_k2(verbose: bool=True):
+    from solutions import SOLUTION_Z4X6
+    m, n = 4, 6
+    group = list(product(range(m), range(n)))
+    gens = [(1, 0), (0, 1)]
+    k = 2
+    all_h = True
+    for c in range(k):
+        visited = set()
+        curr = (0, 0)
+        for _ in range(m * n):
+            if curr in visited: break
+            visited.add(curr)
+            p = SOLUTION_Z4X6[curr]
+            gen = gens[p[c]]
+            curr = ((curr[0] + gen[0]) % m, (curr[1] + gen[1]) % n)
+        if len(visited) != m * n:
+            all_h = False
+            break
+    if verbose:
+        col = "\033[92m✓\033[0m" if all_h else "\033[91m✗\033[0m"
+        print(f"  Z4xZ6 k=2: {col}")
+    return all_h
