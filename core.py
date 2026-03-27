@@ -17,16 +17,17 @@ class Weights:
 
 def extract_weights(m: int, k: int) -> Weights:
     cp = tuple(r for r in range(1, m) if gcd(r, m) == 1); phi_m = len(cp)
-    h2_uni = (phi_m > 0 and all(r % 2 == 1 for r in cp)) and (k % 2 == 1) and (m % 2 == 0)
-    r_tuples = [] if h2_uni else [t for t in iprod(cp, repeat=k) if sum(t) == m]
+    h2_uni = (phi_m > 0 and all(r % 2 == 1 for r in cp)) and (k % 2 != 0) and (m % 2 == 0)
+    r_tuples = [t for t in iprod(cp, repeat=k) if sum(t) % m == 0] if not h2_uni else []
     r_count = len(r_tuples)
     mid = m - (k - 1)
+    canon = ((1,)*(k-1) + (mid,)) if (mid > 0 and math.gcd(mid,m)==1) else (r_tuples[0] if r_count>0 else None)
     canon = ((1,)*(k-1) + (mid,)) if (mid > 0 and gcd(mid,m)==1) else (r_tuples[0] if r_count>0 else None)
     search_exp = m * log2(phi_m * 6) if phi_m > 0 else 0
     full_exp = (m**k) * log2(math.factorial(k))
     compression = search_exp / full_exp if full_exp > 0 else 1.0
     cb = (m**(m-1)) * phi_m
-    sol_lb = phi_m * (cb**(k-1)) if (not h2_uni and r_count > 0) else 0
+    sol_lb = phi_m * (cb**(k-1)) if (not h2_uni) else 0
     return Weights(m=m, k=k, h2_blocks=h2_uni, r_count=r_count, canonical=canon,
                    h1_exact=phi_m, search_exp=round(search_exp,3),
                    compression=round(compression,6), sol_lb=sol_lb, orbit_size=m**(m-1),

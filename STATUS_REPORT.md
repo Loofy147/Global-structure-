@@ -65,3 +65,9 @@ This report summarizes the current progress, completed solutions, and remaining 
 | **Quotient Size** | $m$ | 3 |
 | **Shift Functions ($N_b$)** | $m^{m-1} \cdot \phi(m)$ | 18 |
 | **Total Solutions ($M$)** | $\phi(m) \cdot N_b(m)^{k-1}$ | 648 (Directed/Labeled) |
+
+## Kaggle Search Updates (March 2026)
+
+- **Problem P2 (m=6, k=3):** Hamiltonian decomposition reached a score of **7** (Best seen in Kaggle logs). This indicates the problem is likely solvable with more compute.
+- **Problem P1 (m=4, k=4):** Hamiltonian decomposition reached a score of **98** (Best seen in Kaggle logs). This confirms the fiber-structured approach is effective but the search space is significantly larger than k=3.
+- **TSP Benchmark:** Fiber-Uniform strategy consistently finds solutions for Z_m^2. Optimized with Simulated Annealing for m > 10 to maintain performance.
