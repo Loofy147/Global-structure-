@@ -6,7 +6,7 @@ import math
 import sys
 from itertools import permutations
 
-# --- P2: m=6, k=3 (Full 3D) ---
+# --- P2: m=6, k=3 (Symmetry-Reduced) ---
 def _build_sa3(m):
     n = m**3; k_ = 3
     arc_s = [[0]*k_ for _ in range(n)]
@@ -19,7 +19,7 @@ def _build_sa3(m):
     ALL_P = list(permutations(range(3)))
     for pi, p in enumerate(ALL_P):
         for at, c in enumerate(p): pa[pi][c] = at
-    return n, arc_s, pa
+    return n, arc_s, pa, ALL_P
 
 def _sa_score3(sigma, arc_s, pa, n):
     vis = bytearray(n); total = 0
@@ -33,51 +33,59 @@ def _sa_score3(sigma, arc_s, pa, n):
     return total
 
 def run_p2_worker(seed, max_iter, result_queue):
-    m=6; n, arc_s, pa = _build_sa3(m); nP=6
+    m=6; n, arc_s, pa, ALL_P = _build_sa3(m); nP=6
     rng = random.Random(seed)
-    sigma = [rng.randrange(nP) for _ in range(n)]
-    cs = _sa_score3(sigma, arc_s, pa, n); bs = cs; best = sigma[:]
+    # Reduced symmetry: sigma(i,j,k) = sigma(i,j,k%2)
+    # Space: 6^(6*6*2) = 6^72 (vs 6^216)
+    keys = [(i,j,k) for i in range(m) for j in range(m) for k in range(2)]
+    table = {key: rng.randrange(nP) for key in keys}
+    def get_sig():
+        sig = [0]*n
+        for v in range(n):
+            i, rem = divmod(v, m*m); j, k = divmod(rem, m)
+            sig[v] = table[(i,j,k%2)]
+        return sig
+    sigma = get_sig()
+    cs = _sa_score3(sigma, arc_s, pa, n); bs = cs; best_tab = dict(table)
     T_init = 3.0; T_min = 0.003
     cool = (T_min/T_init)**(1.0/max_iter)
-    T = T_init; stall=0; reheats=0; t0=time.perf_counter()
+    T = T_init; stall=0; reheats=0
     for it in range(max_iter):
         if cs == 0: break
-        if cs <= 2:
-            vlist = list(range(n)); rng.shuffle(vlist)
-            fixed = False
-            for v in vlist:
-                old = sigma[v]
+        if cs <= 4:
+            fixed = False; keys_shuf = list(keys); rng.shuffle(keys_shuf)
+            for key in keys_shuf:
+                old = table[key]
                 for pi in rng.sample(range(nP), nP):
                     if pi == old: continue
-                    sigma[v] = pi
-                    ns = _sa_score3(sigma, arc_s, pa, n)
+                    table[key] = pi; sigma = get_sig(); ns = _sa_score3(sigma, arc_s, pa, n)
                     if ns < cs:
                         cs = ns; fixed = True
-                        if cs < bs: bs=cs; best=sigma[:]
+                        if cs < bs: bs = cs; best_tab = dict(table)
                         break
-                    sigma[v] = old
+                    table[key] = old
                 if fixed: break
             if cs == 0: break
             T *= cool; continue
-        v = rng.randrange(n); old = sigma[v]; new = rng.randrange(nP)
+        key = rng.choice(keys); old = table[key]; new = rng.randrange(nP)
         if new == old: T *= cool; continue
-        sigma[v] = new
-        ns = _sa_score3(sigma, arc_s, pa, n)
+        table[key] = new; sigma = get_sig(); ns = _sa_score3(sigma, arc_s, pa, n)
         d = ns - cs
         if d < 0 or rng.random() < math.exp(-d/max(T, 1e-9)):
             cs = ns
-            if cs < bs: bs=cs; best=sigma[:]; stall=0
+            if cs < bs: bs=cs; best_tab=dict(table); stall=0
             else: stall += 1
-        else: sigma[v] = old; stall += 1
-        if stall > 80_000:
-            T = T_init/(2**reheats); reheats+=1; stall=0
-            sigma = best[:]; cs = bs
+        else: table[key] = old; stall += 1
+        if stall > 50_000:
+            reheats = min(reheats + 1, 100) # Prevent OverflowError
+            T = T_init / (1.5**reheats); stall=0
+            table = dict(best_tab); sigma = get_sig(); cs = bs
         T *= cool
         if (it+1) % 1_000_000 == 0:
             result_queue.put(('p2_update', seed, bs, it+1))
-    result_queue.put(('p2_final', seed, bs, best if bs==0 else None))
+    result_queue.put(('p2_final', seed, bs, best_tab if bs==0 else None))
 
-# --- P1: m=4, k=4 (Fiber-Structured) ---
+# --- P1: m=4, k=4 (Symmetry-Reduced Fiber-Structured) ---
 def _build_sa4(m):
     n = m**4; k_ = 4
     arc_s = [[0]*k_ for _ in range(n)]
@@ -108,14 +116,15 @@ def _sa_score4(sigma, arc_s, pa, n):
 def run_p1_worker(seed, max_iter, result_queue):
     m=4; n, arc_s, pa, ALL_P4 = _build_sa4(m); nP=len(ALL_P4)
     rng = random.Random(seed)
-    # Fiber-structured: sigma(i,j,k,l) = tab(i,j,k)
-    keys = [(i,j,k) for i in range(m) for j in range(m) for k in range(m)]
+    # Reduced symmetry: sigma(i,j,k,l) = tab(i,j,k%2)
+    # Space: 24^(4*4*2) = 24^32 (vs 24^64)
+    keys = [(i,j,k) for i in range(m) for j in range(m) for k in range(2)]
     table = {key: rng.randrange(nP) for key in keys}
     def get_sig():
         sig = [0]*n
         for v in range(n):
             i, r1 = divmod(v, m**3); j, r2 = divmod(r1, m**2); k, l = divmod(r2, m)
-            sig[v] = table[(i,j,k)]
+            sig[v] = table[(i,j,k%2)]
         return sig
     sigma = get_sig()
     cs = _sa_score4(sigma, arc_s, pa, n); bs = cs; best_tab = dict(table)
@@ -149,7 +158,8 @@ def run_p1_worker(seed, max_iter, result_queue):
             else: stall += 1
         else: table[key] = old; stall += 1
         if stall > 50_000:
-            T = T_init/(2**reheats); reheats+=1; stall=0
+            reheats = min(reheats + 1, 100)
+            T = T_init / (1.5**reheats); stall=0
             table = dict(best_tab); sigma = get_sig(); cs = bs
         T *= cool
         if (it+1) % 500_000 == 0:
@@ -159,7 +169,6 @@ def run_p1_worker(seed, max_iter, result_queue):
 def main():
     result_queue = multiprocessing.Queue()
     processes = []
-    # 2 cores for P2, 2 cores for P1
     p2_seeds = [100, 200]
     p1_seeds = [300, 400]
     p2_budget = 100_000_000
