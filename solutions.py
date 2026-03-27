@@ -25,3 +25,10 @@ SOLUTION_Z4X6 = {(i, j): ((0, 1) if (i+j)%2 == 0 else (1, 0)) for i in range(4) 
 
 def get_z4x6_solution():
     return SOLUTION_Z4X6
+
+# S_3 solutions
+SOLUTION_S3_K2 = {'generators': [(1, 0, 2), (0, 2, 1)], 'sigma': {'fiber0': (0, 1), 'fiber1': (1, 0)}}
+SOLUTION_S3_K3 = {'generators': [(0, 2, 1), (1, 0, 2), (2, 1, 0)], 'sigma': {'fiber0': (0, 1, 2), 'fiber1': (1, 2, 0)}}
+
+def get_s3_solutions():
+    return {"k2": SOLUTION_S3_K2, "k3": SOLUTION_S3_K3}
