@@ -234,3 +234,42 @@ class HeldKarpSolver:
             mask = 0
             for i in combo: mask |= (1 << i)
             yield mask
+
+class TwoOptSolver:
+    def __init__(self, tsp: CayleyTSP, weights_vector: List[float], constraints: Constraints = None):
+        self.tsp = tsp
+        self.weights_vector = weights_vector
+        self.constraints = constraints
+
+    def solve(self, initial_path: Optional[List[int]] = None) -> Tuple[Optional[List[int]], float, Optional[EdgeMetrics], int]:
+        if initial_path is None:
+            # Fallback to Nearest Neighbor if no initial path provided
+            initial_path, _, _, _ = NearestNeighborSolver(self.tsp, self.weights_vector, self.constraints).solve()
+
+        if not initial_path: return None, float('inf'), None, 0
+
+        current_path = list(initial_path)
+        current_res = self.tsp.evaluate_path(current_path, self.constraints)
+        if not current_res: return None, float('inf'), None, 0
+        current_score = self.tsp.get_score(current_res[0], self.weights_vector, current_res[1])
+
+        improved = True
+        while improved:
+            improved = False
+            for i in range(1, self.tsp.n - 1):
+                for j in range(i + 1, self.tsp.n):
+                    if j - i == 1: continue # Adjacent
+                    # 2-opt swap
+                    new_path = current_path[:i] + current_path[i:j][::-1] + current_path[j:]
+                    res = self.tsp.evaluate_path(new_path, self.constraints)
+                    if res:
+                        score = self.tsp.get_score(res[0], self.weights_vector, res[1])
+                        if score < current_score:
+                            current_path = new_path
+                            current_score = score
+                            current_res = res
+                            improved = True
+                            break
+                if improved: break
+
+        return current_path, current_score, current_res[0], current_res[1]
