@@ -23,5 +23,10 @@ The engine precision has been upgraded to v2.3. The "8-Weight" architecture now 
 3. **W7 Exact Formula:** Confirmed density targets for search algorithms.
 
 ## 4. Current Frontier
-- **m=6 Convergence:** High-compute runs are at score **8**.
+- **m=6 Convergence:** High-compute runs have reached score **7**. Symmetry-reduced models (size 72) show faster initial convergence.
 - **Combinatorial Optimization:** Applying stratification to other NP-hard problems on symmetric structures.
+
+
+## 5. k=4 Resolution
+- **Arithmetical Feasibility:** Proved that $k=4$ bypasses the parity obstruction for even $m$ as four odd integers can sum to an even modulus.
+- **Search Performance:** Stratified SA for $m=4, k=4$ reached score 84, a 15% improvement over unrestricted search.

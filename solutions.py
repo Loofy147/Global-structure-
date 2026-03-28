@@ -32,3 +32,7 @@ SOLUTION_S3_K3 = {'generators': [(0, 2, 1), (1, 0, 2), (2, 1, 0)], 'sigma': {'fi
 
 def get_s3_solutions():
     return {"k2": SOLUTION_S3_K2, "k3": SOLUTION_S3_K3}
+
+# Z_2^4 Hamiltonian Decomposition (Full Coordinate)
+SOLUTION_Z2K4 = [2, 12, 3, 19, 16, 9, 12, 1, 7, 3, 14, 17, 21, 14, 9, 8]
+def get_z2k4_solution(): return SOLUTION_Z2K4

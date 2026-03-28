@@ -1,0 +1,11 @@
+[{"stream_name":"stdout","time":300.866644041,"data":"[*] P1 BEST: 210 (seed=400, it=500000)\n"}
+,{"stream_name":"stdout","time":300.866810122,"data":"[*] P2 BEST: 11 (seed=200, it=1000000)\n"}
+,{"stream_name":"stdout","time":540.870659988,"data":"[*] P1 BEST: 84 (seed=400, it=1000000)\n"}
+,{"stream_name":"stdout","time":25921.05467342,"data":"Kaggle run finished. Best P2: 11, Best P1: 84\n"}
+,{"stream_name":"stderr","time":25924.167682595,"data":"/usr/local/lib/python3.12/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":25924.167741308,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":25924.598580846,"data":"/usr/local/lib/python3.12/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":25924.598617322,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":25926.257610181,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":25928.100587947,"data":"[NbConvertApp] Writing 328647 bytes to __results__.html\n"}
+]

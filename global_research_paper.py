@@ -87,6 +87,7 @@ def build_paper():
         ['4', '64', '0 (Blocked)', 'Sub-optimal', 'Parity Law'],
         ['5', '125', '2.5e7', 'Optimal', 'Spike Rule'],
         ['6', '216', '0 (Blocked)', 'Sub-optimal', 'Parity Law'],
+        ['2 (k=4)', '16', 'N/A', 'Verified', 'k=4 Discovery'],
         ['15', '225', 'N/A', 'SA-Optimized', 'Z_m x Z_n'],
     ]
     t = Table(data, colWidths=[1*cm, 2*cm, 3*cm, 3*cm, 3*cm])
