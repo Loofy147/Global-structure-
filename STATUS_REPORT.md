@@ -6,8 +6,8 @@ This report summarizes the current progress, completed solutions, and remaining 
 
 ### 1.1. Odd Order Orders ($m$)
 - **Problem:** Find Hamiltonian decompositions for $G_m$ on $\mathbb{Z}_m^3$ for all odd $m$.
-- **Solution:** Deterministic "Spike Rule" construction.
-- **Aspects:** An $O(m^2)$ algorithm that constructs a fiber-uniform mapping $\sigma(s, j)$ which guarantees three Hamiltonian cycles. Verified for $m = 3, 5, 7, 9, 11$.
+- **Solution:** Theorem of Geometric Construction (v3.0).
+- **Aspects:** A deterministic $O(m)$ search-free construction that constructs a fiber-uniform mapping $\sigma(s, j)$ which guarantees three Hamiltonian cycles. Verified for $m = 3, 5, 7, 9, 11$.
 - **Reference:** `core.py:construct_spike_sigma(m)`, `theorems.py:Thm 7.1`.
 
 ### 1.2. Even Order Orders ($m = 4$)

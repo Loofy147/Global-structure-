@@ -34,7 +34,7 @@ def build_paper():
     story.append(Paragraph(
         "This paper presents a comprehensive resolution to the Hamiltonian decomposition problem for the directed Cayley graph G_m on Z_m^k. "
         "We establish a fundamental dichotomy between odd and even orders m, and derive the exact solution density formula for the m=3 case. "
-        "For odd m, we exhibit a deterministic O(m^2) construction ('The Spike Rule'). "
+        "For odd m, we prove the 'Theorem of Geometric Construction', a search-free O(m) algorithm that generates valid decompositions for all odd m. "
         "For even m, we prove a parity obstruction for fiber-uniform mappings and employ Simulated Annealing to discover coordinate-dependent solutions. "
         "Furthermore, we extend the framework to non-abelian groups (S_3) and product groups (Z_m x Z_n), "
         "and demonstrate a stratified optimization engine for the Traveling Salesman Problem (TSP) on these graphs.",
