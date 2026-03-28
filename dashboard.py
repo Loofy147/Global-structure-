@@ -38,7 +38,7 @@ def main():
     print("   Feasibility (k=4): 4 * odd = even (PASSED)")
     k4_problems = [
         ("Z_2^4", 16, "RESOLVED", "Full Coord", 0),
-        ("Z_4^4", 256, "OPEN (P1)", "Periodic2 SA", 44),
+        ("Z_4^4", 256, "OPEN (P1)", "Periodic2 SA", 21),
     ]
     for p, n, s, m_, sc in k4_problems:
         print(f"   {p:<6} {n:<6} {s:<15} {sc:<12} {m_}")
